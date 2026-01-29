@@ -1,5 +1,5 @@
 # backend/metrics.py
-
+from backend.bb84 import generate_bits, generate_bases, measure_bits, sift_key, calculate_qber
 def calculate_fidelity(alice_bits, bob_bits, alice_bases, bob_bases):
     correct = 0
     total = 0

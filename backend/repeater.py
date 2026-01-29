@@ -1,5 +1,6 @@
 # backend/repeater.py
 import random
+from backend.bb84 import generate_bits, generate_bases, measure_bits, sift_key, calculate_qber
 
 def apply_repeater_noise(bits, distance, repeaters):
     segments = repeaters + 1

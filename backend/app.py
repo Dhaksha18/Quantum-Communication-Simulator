@@ -3,7 +3,7 @@ from flask_cors import CORS  # Required to talk to the frontend
 import random
 
 # Importing your logic files
-from bb84 import generate_bits, generate_bases, measure_bits, sift_key, calculate_qber
+from backend.bb84 import generate_bits, generate_bases, measure_bits, sift_key, calculate_qber
 from repeater import apply_repeater_noise
 from metrics import calculate_fidelity
 from eve import eve_intercept
