@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Quantum Communication Simulator</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+
+<h1>Quantum Communication Network Simulation</h1>
+
+<!-- Distance Slider -->
+<label>Distance (km):</label>
+<input type="range" id="distance" min="1" max="100" value="10">
+<span id="distVal">10</span> km
+
+<!-- ✅ ADD THIS BLOCK BELOW -->
+<br><br>
+<label>Quantum Repeaters:</label>
+<input type="range" id="repeaters" min="0" max="5" value="0">
+<span id="repVal">0</span>
+
+<br><br>
+
+<!-- Eve Checkbox (UNCHANGED) -->
+<label>
+  <input type="checkbox" id="eve"> Eve (Eavesdropper)
+</label>
+
+<br><br>
+
+<button onclick="runSimulation()">Run Simulation</button>
+
+<h3>Results</h3>
+<p id="results"></p>
+
+<canvas id="qberChart"></canvas>
+
+<script src="script.js"></script>
+
+</body>
+</html>
