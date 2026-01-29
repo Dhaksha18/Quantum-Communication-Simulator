@@ -7,7 +7,7 @@ from backend.bb84 import generate_bits, generate_bases, measure_bits, sift_key, 
 from backend.repeater import apply_repeater_noise
 
 from backend.metrics import calculate_fidelity
-from eve import eve_intercept
+from backend.eve import eve_intercept
 
 app = Flask(__name__)
 CORS(app)  # This enables the connection between frontend and backend
