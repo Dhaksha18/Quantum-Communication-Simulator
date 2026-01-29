@@ -59,28 +59,31 @@ function runSimulation() {
     let distances = [10, 20, 30, 40, 50, 60, 70, 80, 90, 100];
     let index = 0;
 
-    function runNext() {
-        if (index >= distances.length) {
-            console.log("Simulation Complete");
-            return;
-        }
+  // ... existing code ...
 
-        let d = distances[index];
+function runNext() {
+    if (index >= distances.length) {
+        console.log("Simulation Complete");
+        return;
+    }
 
-        // 1. Fetch simulation WITHOUT repeaters
-        fetch('http://127.0.0.1:5000/simulate', {
+    let d = distances[index];
+
+    // 1. UPDATE THIS FETCH (WITHOUT repeaters)
+    fetch('https://quantum-communication-simulator.onrender.com/simulate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ qubits: 100, distance: d, repeaters: 0, eve: eve })
+    })
+    .then(res => res.json())
+    .then(noRepData => {
+        // 2. UPDATE THIS FETCH (WITH repeaters)
+        return fetch('https://quantum-communication-simulator.onrender.com/simulate', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ qubits: 100, distance: d, repeaters: 0, eve: eve })
+            body: JSON.stringify({ qubits: 100, distance: d, repeaters: repeaters, eve: eve })
         })
-        .then(res => res.json())
-        .then(noRepData => {
-            // 2. Fetch simulation WITH repeaters
-            return fetch('http://127.0.0.1:5000/simulate', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ qubits: 100, distance: d, repeaters: repeaters, eve: eve })
-            })
+// ... rest of the code ...
             .then(res => res.json())
             .then(repData => {
                 // 3. Update arrays with new data
