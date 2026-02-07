@@ -1,109 +1,200 @@
-/* frontend/script.js */
+// API URL (Render backend)
+const API_URL = "https://quantum-communication-simulator.onrender.com/simulate";
 
-let distanceData = [];
-let qberNoRepeater = [];
-let qberWithRepeater = [];
 
-const ctx = document.getElementById('qberChart').getContext('2d');
-const chart = new Chart(ctx, {
-    type: 'line',
+// Get elements
+const distanceSlider = document.getElementById("distance");
+const repeatersSlider = document.getElementById("repeaters");
+const speedSlider = document.getElementById("speedControl");
+const eveCheckbox = document.getElementById("eve");
+
+const distVal = document.getElementById("distVal");
+const repVal = document.getElementById("repVal");
+const speedVal = document.getElementById("speedVal");
+
+const statusText = document.getElementById("status");
+const liveQBERText = document.getElementById("liveQBER");
+const securityAlert = document.getElementById("securityAlert");
+
+const keyLength = document.getElementById("keyLength");
+const qberValue = document.getElementById("qberValue");
+const fidelityValue = document.getElementById("fidelityValue");
+const eveStatus = document.getElementById("eveStatus");
+
+// Slider updates
+distanceSlider.oninput = () => distVal.innerText = distanceSlider.value;
+repeatersSlider.oninput = () => repVal.innerText = repeatersSlider.value;
+speedSlider.oninput = () => speedVal.innerText = speedSlider.value;
+
+// Chart setup
+let distances = [];
+let qberData = [];
+
+const chart = new Chart(document.getElementById("qberChart"), {
+    type: "line",
     data: {
-        labels: distanceData,
-        datasets: [
-            {
-                label: 'QBER (No Repeaters)',
-                data: qberNoRepeater,
-                borderColor: '#e74c3c',
-                backgroundColor: 'rgba(231, 76, 60, 0.2)',
-                borderWidth: 2,
-                tension: 0.1
-            },
-            {
-                label: 'QBER (With Repeaters)',
-                data: qberWithRepeater,
-                borderColor: '#2ecc71',
-                backgroundColor: 'rgba(46, 204, 113, 0.2)',
-                borderWidth: 2,
-                tension: 0.1
-            }
-        ]
+        labels: distances,
+        datasets: [{
+            label: "QBER",
+            data: qberData,
+            borderWidth: 2,
+            tension: 0.2
+        }]
     },
     options: {
         responsive: true,
         scales: {
-            x: { title: { display: true, text: 'Distance (km)' } },
-            y: { title: { display: true, text: 'QBER' }, min: 0, max: 1 }
+            y: {
+                min: 0,
+                max: 1
+            }
         }
     }
 });
 
-// Update display values for sliders
-document.getElementById('distance').oninput = function() {
-    document.getElementById('distVal').innerText = this.value;
-};
+// Animation setup
+const canvas = document.getElementById("networkCanvas");
+const ctx = canvas.getContext("2d");
 
-document.getElementById('repeaters').oninput = function() {
-    document.getElementById('repVal').innerText = this.value;
-};
+let qubits = [];
+let animationRunning = false;
 
-function runSimulation() {
-    const repeaters = document.getElementById('repeaters').value;
-    const eve = document.getElementById('eve').checked;
+// Noise model
+function getNoiseProbability(distance, repeaters, eve) {
+    let noise = Math.min(distance * 0.002, 0.25);
+    if (eve) noise += 0.05;
+    if (repeaters > 0) noise *= (1 / (repeaters + 1));
+    return noise;
+}
 
-    // Clear old data for a fresh graph
-    distanceData.length = 0;
-    qberNoRepeater.length = 0;
-    qberWithRepeater.length = 0;
-    chart.update();
+// Create qubits
+function createQubits(distance, repeaters, eve) {
+    qubits = [];
+    let noiseProb = getNoiseProbability(distance, repeaters, eve);
 
-    let distances = [10, 20, 30, 40, 50, 60, 70, 80, 90, 100];
-    let index = 0;
-
-  // ... existing code ...
-
-function runNext() {
-    if (index >= distances.length) {
-        console.log("Simulation Complete");
-        return;
-    }
-
-    let d = distances[index];
-
-    // 1. UPDATE THIS FETCH (WITHOUT repeaters)
-    fetch('https://quantum-communication-simulator.onrender.com/simulate', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ qubits: 100, distance: d, repeaters: 0, eve: eve })
-    })
-    .then(res => res.json())
-    .then(noRepData => {
-        // 2. UPDATE THIS FETCH (WITH repeaters)
-        return fetch('https://quantum-communication-simulator.onrender.com/simulate', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ qubits: 100, distance: d, repeaters: repeaters, eve: eve })
-        })
-// ... rest of the code ...
-            .then(res => res.json())
-            .then(repData => {
-                // 3. Update arrays with new data
-                distanceData.push(d);
-                qberNoRepeater.push(noRepData.qber);
-                qberWithRepeater.push(repData.qber);
-
-                // FIXED: Update the chart visually after every single data point
-                chart.update(); 
-
-                // 4. Move to next distance
-                index++;
-                runNext();
-            });
-        })
-        .catch(err => {
-            console.error("Connection Error:", err);
-            alert("Backend Error: Make sure your Flask server (app.py) is running!");
+    for (let i = 0; i < 15; i++) {
+        qubits.push({
+            x: 60,
+            y: 50 + Math.random() * 50,
+            noisy: Math.random() < noiseProb
         });
     }
+}
 
-    runNext();
+// Live QBER calculation
+function updateLiveQBER() {
+    if (qubits.length === 0) return;
+
+    let noisy = qubits.filter(q => q.noisy).length;
+    let qber = noisy / qubits.length;
+    liveQBERText.innerText = qber.toFixed(3);
+
+    if (qber > 0.11) {
+        securityAlert.style.display = "block";
+    }
+}
+
+// Draw network animation
+function drawNetwork(eve, repeaters) {
+
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    // Alice
+    ctx.fillText("Alice", 40, 20);
+    ctx.beginPath();
+    ctx.arc(60, 75, 15, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Bob
+    ctx.fillText("Bob", 620, 20);
+    ctx.beginPath();
+    ctx.arc(640, 75, 15, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Eve
+    if (eve) {
+        ctx.fillText("Eve", 330, 20);
+        ctx.beginPath();
+        ctx.arc(350, 75, 12, 0, Math.PI * 2);
+        ctx.fill();
+    }
+
+    // Repeaters
+    for (let i = 1; i <= repeaters; i++) {
+        let x = 60 + i * 100;
+        ctx.fillText("R", x - 5, 20);
+        ctx.beginPath();
+        ctx.arc(x, 75, 10, 0, Math.PI * 2);
+        ctx.fill();
+    }
+
+    let speed = parseFloat(speedSlider.value);
+
+    qubits.forEach(q => {
+        q.x += speed;
+        if (q.x > 640) q.x = 60;
+
+        ctx.beginPath();
+        ctx.fillStyle = q.noisy ? "red" : "green";
+        ctx.arc(q.x, q.y, 4, 0, Math.PI * 2);
+        ctx.fill();
+    });
+
+    updateLiveQBER();
+
+    if (animationRunning) {
+        requestAnimationFrame(() => drawNetwork(eve, repeaters));
+    }
+}
+
+// Run simulation
+function runSimulation() {
+
+    statusText.innerText = "Running...";
+    securityAlert.style.display = "none";
+    liveQBERText.innerText = "0.00";
+
+    const d = parseInt(distanceSlider.value);
+    const r = parseInt(repeatersSlider.value);
+    const eve = eveCheckbox.checked;
+
+    createQubits(d, r, eve);
+
+    animationRunning = true;
+    drawNetwork(eve, r);
+
+    fetch(API_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+            qubits: 100,
+            distance: d,
+            repeaters: r,
+            eve: eve
+        })
+    })
+    .then(res => res.json())
+    .then(data => {
+
+        keyLength.innerText = data.final_key_length;
+        qberValue.innerText = data.qber;
+        fidelityValue.innerText = data.fidelity;
+        eveStatus.innerText = data.eve_detected ? "Detected" : "Not Detected";
+
+        if (data.eve_detected) {
+            securityAlert.style.display = "block";
+        }
+
+        distances.push(d);
+        qberData.push(data.qber);
+        chart.update();
+
+        statusText.innerText = "Simulation Complete";
+        animationRunning = false;
+    })
+    .catch(err => {
+        console.error(err);
+        statusText.innerText = "Backend Error";
+        animationRunning = false;
+    });
 }

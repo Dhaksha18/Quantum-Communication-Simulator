@@ -1,42 +1,132 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Quantum Communication Simulator</title>
+  <title>Quantum Communication Network Simulator</title>
   <link rel="stylesheet" href="style.css">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
 
-<h1>Quantum Communication Network Simulation</h1>
+<!-- Navigation -->
+<nav class="navbar">
+  <h2>Quantum Network Simulator</h2>
+  <ul>
+    <li><a href="#about">About</a></li>
+    <li><a href="#simulator">Simulator</a></li>
+  </ul>
+</nav>
 
-<!-- Distance Slider -->
-<label>Distance (km):</label>
-<input type="range" id="distance" min="1" max="100" value="10">
-<span id="distVal">10</span> km
+<!-- Header -->
+<header class="hero">
+  <h1>Quantum Communication Network Simulator</h1>
+  <p>BB84 Protocol | Noise Modeling | Repeaters | Eavesdropping Detection</p>
+</header>
 
-<!-- ✅ ADD THIS BLOCK BELOW -->
-<br><br>
-<label>Quantum Repeaters:</label>
-<input type="range" id="repeaters" min="0" max="5" value="0">
-<span id="repVal">0</span>
+<!-- About Section -->
+<section id="about" class="section">
+  <h2>About the Project</h2>
+  <p>
+    This simulator demonstrates Quantum Key Distribution using the BB84 protocol.
+    It models channel noise, repeaters, and eavesdropping while visualizing QBER,
+    fidelity, and key generation in real time.
+  </p>
+</section>
 
-<br><br>
+<!-- Simulator Section -->
+<section id="simulator" class="section">
 
-<!-- Eve Checkbox (UNCHANGED) -->
-<label>
-  <input type="checkbox" id="eve"> Eve (Eavesdropper)
-</label>
+  <!-- Control Panel -->
+  <div class="control-panel">
+    <h2>Simulation Parameters</h2>
 
-<br><br>
+    <label>Distance (km):</label>
+    <input type="range" id="distance" min="1" max="100" value="10">
+    <span id="distVal">10</span> km
 
-<button onclick="runSimulation()">Run Simulation</button>
+    <br><br>
 
-<h3>Results</h3>
-<p id="results"></p>
+    <label>Quantum Repeaters:</label>
+    <input type="range" id="repeaters" min="0" max="5" value="0">
+    <span id="repVal">0</span>
 
-<canvas id="qberChart"></canvas>
+    <br><br>
+
+    <label>Transmission Speed:</label>
+    <input type="range" id="speedControl" min="1" max="5" value="2">
+    <span id="speedVal">2</span> x
+
+    <br><br>
+
+    <label>
+      <input type="checkbox" id="eve"> Eve (Eavesdropper)
+    </label>
+
+    <br><br>
+
+    <button onclick="runSimulation()">Run Quantum Channel Simulation</button>
+
+    <p id="status">Ready</p>
+  </div>
+
+
+  <!-- Animation Section -->
+  <div class="chart-container">
+    <h2>Quantum Transmission Visualization</h2>
+    <canvas id="networkCanvas" width="700" height="150"></canvas>
+
+    <h3>Live Channel Monitoring</h3>
+    <p>Live QBER Estimate: <span id="liveQBER">0.00</span></p>
+
+    <!-- Security Alert -->
+    <div id="securityAlert" class="alert-box" style="display:none;">
+      ⚠ SECURITY ALERT: Possible Eavesdropping Detected
+    </div>
+
+    <!-- Legend -->
+    <p>
+      <span style="color:green;">●</span> Correct Qubits
+      &nbsp;&nbsp;
+      <span style="color:red;">●</span> Noisy Qubits
+    </p>
+  </div>
+
+
+  <!-- Dashboard Metrics -->
+  <div class="dashboard">
+    <div class="card">
+      <h3>Final Key Length</h3>
+      <p id="keyLength">-</p>
+    </div>
+
+    <div class="card">
+      <h3>QBER</h3>
+      <p id="qberValue">-</p>
+    </div>
+
+    <div class="card">
+      <h3>Fidelity</h3>
+      <p id="fidelityValue">-</p>
+    </div>
+
+    <div class="card">
+      <h3>Eve Detection</h3>
+      <p id="eveStatus">-</p>
+    </div>
+  </div>
+
+
+  <!-- Graph -->
+  <div class="chart-container">
+    <h2>Quantum Transmission Analysis</h2>
+    <canvas id="qberChart"></canvas>
+  </div>
+
+</section>
+
+<footer>
+  <p>B.Tech Major Project – Quantum Communication Network Simulator</p>
+</footer>
 
 <script src="script.js"></script>
-
 </body>
 </html>
