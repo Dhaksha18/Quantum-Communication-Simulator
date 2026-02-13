@@ -97,3 +97,14 @@ footer {
   50% {opacity: 0.4;}
   100% {opacity: 1;}
 }
+.dark-mode {
+  background: #111;
+  color: white;
+}
+
+.dark-mode .card,
+.dark-mode .control-panel,
+.dark-mode .chart-container {
+  background: #1e1e1e;
+  color: white;
+}

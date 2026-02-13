@@ -10,10 +10,12 @@
 <!-- Navigation -->
 <nav class="navbar">
   <h2>Quantum Network Simulator</h2>
-  <ul>
-    <li><a href="#about">About</a></li>
-    <li><a href="#simulator">Simulator</a></li>
-  </ul>
+  <div>
+    <label style="color:white;">
+      Dark Mode
+      <input type="checkbox" id="darkToggle">
+    </label>
+  </div>
 </nav>
 
 <!-- Header -->
@@ -21,6 +23,11 @@
   <h1>Quantum Communication Network Simulator</h1>
   <p>BB84 Protocol | Noise Modeling | Repeaters | Eavesdropping Detection</p>
 </header>
+
+<!-- Security Status Banner -->
+<div id="securityStatus" class="security-banner secure">
+  Network Status: Secure
+</div>
 
 <!-- About Section -->
 <section id="about" class="section">
@@ -63,11 +70,23 @@
 
     <br><br>
 
+    <label>
+      <input type="checkbox" id="comparisonMode">
+      Comparison Mode (Eve ON vs OFF)
+    </label>
+
+    <br><br>
+
     <button onclick="runSimulation()">Run Quantum Channel Simulation</button>
 
     <p id="status">Ready</p>
   </div>
 
+  <!-- Topology View -->
+  <div class="chart-container">
+    <h2>Network Topology</h2>
+    <canvas id="topologyCanvas" width="700" height="120"></canvas>
+  </div>
 
   <!-- Animation Section -->
   <div class="chart-container">
@@ -90,9 +109,9 @@
     </p>
   </div>
 
-
   <!-- Dashboard Metrics -->
   <div class="dashboard">
+
     <div class="card">
       <h3>Final Key Length</h3>
       <p id="keyLength">-</p>
@@ -109,16 +128,35 @@
     </div>
 
     <div class="card">
+      <h3>Key Rate</h3>
+      <p id="keyRate">-</p>
+    </div>
+
+    <div class="card">
+      <h3>Channel Loss</h3>
+      <p id="channelLoss">-</p>
+    </div>
+
+    <div class="card">
       <h3>Eve Detection</h3>
       <p id="eveStatus">-</p>
     </div>
-  </div>
 
+  </div>
 
   <!-- Graph -->
   <div class="chart-container">
     <h2>Quantum Transmission Analysis</h2>
     <canvas id="qberChart"></canvas>
+
+    <br>
+    <button onclick="exportResults()">Export Results (CSV)</button>
+  </div>
+
+  <!-- Simulation History -->
+  <div class="chart-container">
+    <h2>Simulation History</h2>
+    <ul id="historyList"></ul>
   </div>
 
 </section>
